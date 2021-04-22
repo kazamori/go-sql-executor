@@ -66,8 +66,18 @@ func (h *Handler) setElapsedTime(sql string, msec float64) {
 }
 
 func (h *Handler) Query(
-	ctx context.Context, sql string, useTransaction bool,
+	ctx context.Context, rawSql string, useTransaction bool,
 ) (err error) {
+	var sql = rawSql
+	if HasBindVariable(rawSql) {
+		p := NewSimpleParser(rawSql)
+		p.Parse()
+		sql, err = p.Replace()
+		if err != nil {
+			return err
+		}
+	}
+
 	if useTransaction {
 		if err = h.raw.Begin(); err != nil {
 			return err
@@ -86,8 +96,9 @@ func (h *Handler) Query(
 
 	elapsed := time.Since(start)
 	log.Debug("elapsed time", map[string]interface{}{
-		"sql":  sql,
-		"took": elapsed,
+		"raw_sql":  rawSql,
+		"exec_sql": sql,
+		"took":     elapsed,
 	})
 	mseconds := float64(elapsed.Microseconds()) / 1000
 	h.setElapsedTime(sql, mseconds)
