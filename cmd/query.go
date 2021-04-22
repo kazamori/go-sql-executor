@@ -15,11 +15,12 @@ import (
 
 type queryCmd struct {
 	commonOption
-	q            string
-	file         fileFlag
-	concurrent   int
-	repeat       int
-	enableOutput bool
+	q                 string
+	file              fileFlag
+	concurrent        int
+	repeat            int
+	enableOutput      bool
+	enableTransaction bool
 }
 
 func (*queryCmd) Name() string {
@@ -51,6 +52,8 @@ func (c *queryCmd) SetFlags(f *flag.FlagSet) {
 	f.IntVar(&c.concurrent, "concurrent", 1, "the number of concurrent")
 	f.IntVar(&c.repeat, "repeat", 3, "repeat query given SQL")
 	f.BoolVar(&c.enableOutput, "enableOutput", false, "output SQL results")
+	f.BoolVar(&c.enableTransaction,
+		"enableTransaction", false, "execute as a transaction")
 }
 
 func (c *queryCmd) executeQuery(
@@ -59,14 +62,14 @@ func (c *queryCmd) executeQuery(
 	i := 0
 	for i < c.repeat {
 		if q != "" {
-			if err := h.Query(ctx, q); err != nil {
+			if err := h.Query(ctx, q, c.enableTransaction); err != nil {
 				return err
 			}
 		}
 
 		if len(queries) > 0 {
 			for _, q := range queries {
-				if err := h.Query(ctx, q); err != nil {
+				if err := h.Query(ctx, q, c.enableTransaction); err != nil {
 					return err
 				}
 			}

@@ -65,10 +65,25 @@ func (h *Handler) setElapsedTime(sql string, msec float64) {
 	h.elapsedTime[sql] = tv
 }
 
-func (h *Handler) Query(ctx context.Context, sql string) (err error) {
+func (h *Handler) Query(
+	ctx context.Context, sql string, useTransaction bool,
+) (err error) {
+	if useTransaction {
+		if err = h.raw.Begin(); err != nil {
+			return err
+		}
+	}
+
 	h.raw.Reset([]rune(sql))
 	start := time.Now()
 	err = h.raw.Run()
+
+	if useTransaction {
+		if e := h.raw.Commit(); e != nil {
+			return e
+		}
+	}
+
 	elapsed := time.Since(start)
 	log.Debug("elapsed time", map[string]interface{}{
 		"sql":  sql,
@@ -80,7 +95,9 @@ func (h *Handler) Query(ctx context.Context, sql string) (err error) {
 }
 
 func (h *Handler) ShowSystemInfo() error {
-	return h.Query(context.Background(), h.config.Driver.GetVersion())
+	return h.Query(
+		context.Background(), h.config.Driver.GetVersion(), false,
+	)
 }
 
 func (h *Handler) GetElapsedTime() map[string]stats.TimeValues {

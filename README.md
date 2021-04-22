@@ -97,11 +97,15 @@ The `query` subcommand queries any SQL.
 $ ./bin/sql-executor query --help
 query:
   query any SQL.
+
   (omit database configuration options)
+
   -concurrent int
         the number of concurrent (default 1)
   -enableOutput
         output SQL results
+  -enableTransaction
+        execute as a transaction
   -file value
         a file including SQL queries
   -q string
