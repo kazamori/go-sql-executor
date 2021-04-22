@@ -7,20 +7,24 @@ import (
 )
 
 type Stats struct {
-	min    float64
-	max    float64
-	mean   float64
-	median float64
+	min     float64
+	max     float64
+	mean    float64
+	median  float64
+	stddevp float64
+	stddevs float64
 
 	unit string
 }
 
 func (s *Stats) Show() {
 	fmt.Printf("basic (%s):\n", s.unit)
-	fmt.Printf(" - min: %.3f\n", s.min)
-	fmt.Printf(" - max: %.3f\n", s.max)
-	fmt.Printf(" - avg: %.3f\n", s.mean)
-	fmt.Printf(" - med: %.3f\n", s.median)
+	fmt.Printf(" - min    : %.3f\n", s.min)
+	fmt.Printf(" - max    : %.3f\n", s.max)
+	fmt.Printf(" - mean   : %.3f\n", s.mean)
+	fmt.Printf(" - median : %.3f\n", s.median)
+	fmt.Printf(" - stddevp: %.3f\n", s.stddevp)
+	fmt.Printf(" - stddevs: %.3f\n", s.stddevs)
 }
 
 func GetBasicStatistics(values []float64, unit string) (*Stats, error) {
@@ -40,12 +44,23 @@ func GetBasicStatistics(values []float64, unit string) (*Stats, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get Median: %w", err)
 	}
+	stddevp, _ := stats.StdDevP(values)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get StdDevP: %w", err)
+	}
+	stddevs, _ := stats.StdDevS(values)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get StdDevS: %w", err)
+	}
+
 	stats := &Stats{
-		min:    min,
-		max:    max,
-		mean:   mean,
-		median: median,
-		unit:   unit,
+		min:     min,
+		max:     max,
+		mean:    mean,
+		median:  median,
+		stddevp: stddevp,
+		stddevs: stddevs,
+		unit:    unit,
 	}
 	return stats, nil
 }
