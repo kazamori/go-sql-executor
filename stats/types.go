@@ -15,6 +15,10 @@ func (e *TimeValues) AppendTimeValue(tv TimeValues) {
 	}
 }
 
+func (e *TimeValues) Len() int {
+	return len(e.values)
+}
+
 func NewTimeValues(unit string) *TimeValues {
 	return &TimeValues{
 		values: make([]float64, 0),
