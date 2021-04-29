@@ -1,0 +1,24 @@
+# How to configure: https://github.com/golangci/golangci-lint#config-file
+run:
+  concurrency: 4
+  timeout: 30s
+  issues-exit-code: 1
+  tests: true
+
+linters:
+  disable-all: true
+  enable:
+    - deadcode
+    - goconst
+    - gofmt
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - misspell
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+    - whitespace
