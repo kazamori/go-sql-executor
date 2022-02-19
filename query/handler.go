@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+	_sql "database/sql"
 	"fmt"
 	"os"
 	"os/user"
@@ -53,7 +54,7 @@ func (h *Handler) Connect() error {
 	if err := h.configure(); err != nil {
 		return fmt.Errorf("failed to configure: %w", err)
 	}
-	return h.raw.Open(h.dsn)
+	return h.raw.Open(context.TODO(), h.dsn)
 }
 
 func (h *Handler) setElapsedTime(sql string, msec float64) {
@@ -79,7 +80,11 @@ func (h *Handler) Query(
 	}
 
 	if useTransaction {
-		if err = h.raw.Begin(); err != nil {
+		var txOpts = &_sql.TxOptions{
+			Isolation: _sql.LevelReadUncommitted,
+			ReadOnly:  false,
+		}
+		if err = h.raw.Begin(txOpts); err != nil {
 			return err
 		}
 	}
