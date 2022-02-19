@@ -163,3 +163,16 @@ Connected with driver postgres (PostgreSQL 11.10)
 (1 row)
 ```
 
+## How to build docker image
+
+```bash
+$ docker build --tag go-sql-executor .
+$ docker images | grep go-sql-executor
+```
+
+Run sql-executor in the dockre container.
+
+```bash
+$ docker run --rm go-sql-executor /sql-executor -version
+Build on 2022-02-19T09:21:33Z from revision: 6e352c23
+```
