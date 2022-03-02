@@ -20,11 +20,13 @@ jobs:
 
       - name: Get App Installation Token
         run: |
-          echo "This token is masked: ${INSTALLATION_TOKEN}"
-        env: 
+          echo "This token is masked: ${GITHUB_TOKEN}"
+        env:
           GITHUB_TOKEN: ${{ steps.get_token.outputs.app_token }}
 
       - name: Get Deployments
         run: |
           echo "deployments"
           gh api repos/kazamori/github-api-tools/deployments
+        env:
+          GITHUB_TOKEN: ${{ steps.get_token.outputs.app_token }}
