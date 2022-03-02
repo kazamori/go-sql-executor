@@ -1,0 +1,28 @@
+on:
+  deployment_status
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      APP_ID: 176318
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get token
+        id: get_token
+        uses: machine-learning-apps/actions-app-token@master
+        with:
+          APP_ID: ${{ env.APP_ID }}
+          APP_PEM: ${{ secrets.APP_PEM }}
+
+      - name: Get App Installation Token
+        run: |
+          echo "This token is masked: ${INSTALLATION_TOKEN}"
+        env: 
+          GITHUB_TOKEN: ${{ steps.get_token.outputs.app_token }}
+
+      - name: Get Deployments
+        run: |
+          echo "deployments"
+          gh api repos/kazamori/github-api-tools/deployments
