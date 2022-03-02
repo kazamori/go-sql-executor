@@ -24,8 +24,9 @@ jobs:
           echo "This token is masked: ${GITHUB_TOKEN}"
           echo "GITHUB_TOKEN=${{ steps.get_token.outputs.app_token }}" >> $GITHUB_ENV
 
-      - name: Get deployments
+      - name: Update deployments status
         run: |
           echo "deployments"
           deployment_id=$(gh api repos/kazamori/github-api-tools/deployments | jq .[0].id)
-          gh api repos/kazamori/github-api-tools/deployments/${deployment_id} -f deployment_id=${deployment_id} -f state=success | jq .
+          echo "deployment_id: ${deployment_id}"
+          gh api repos/kazamori/github-api-tools/deployments/${deployment_id}/statuses -f deployment_id=${deployment_id} -f state=success | jq .
