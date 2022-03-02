@@ -8,25 +8,24 @@ jobs:
     runs-on: ubuntu-latest
     env:
       APP_ID: 176318
+      GITHUB_TOKEN: OVERWRITE
     steps:
       - uses: actions/checkout@v2
 
-      - name: Get token
+      - name: Get installation token
         id: get_token
         uses: machine-learning-apps/actions-app-token@master
         with:
           APP_ID: ${{ env.APP_ID }}
           APP_PEM: ${{ secrets.APP_PEM }}
 
-      - name: Get App Installation Token
+      - name: Overwrite app installation token as GitHub token
         run: |
           echo "This token is masked: ${GITHUB_TOKEN}"
-        env:
-          GITHUB_TOKEN: ${{ steps.get_token.outputs.app_token }}
+          echo "GITHUB_TOKEN=${{ steps.get_token.outputs.app_token }}" >> $GITHUB_ENV
 
-      - name: Get Deployments
+      - name: Get deployments
         run: |
           echo "deployments"
-          gh api repos/kazamori/github-api-tools/deployments
-        env:
-          GITHUB_TOKEN: ${{ steps.get_token.outputs.app_token }}
+          deployment_id=$(gh api repos/kazamori/github-api-tools/deployments | jq .[0].id)
+          gh api repos/kazamori/github-api-tools/deployments/${deployment_id} -f deployment_id=${deployment_id} -f state=success | jq .
