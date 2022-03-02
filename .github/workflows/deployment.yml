@@ -26,7 +26,11 @@ jobs:
 
       - name: Update deployments status
         run: |
-          echo "deployments"
+          echo "update deployments"
           deployment_id=$(gh api repos/kazamori/github-api-tools/deployments | jq .[0].id)
           echo "deployment_id: ${deployment_id}"
           gh api repos/kazamori/github-api-tools/deployments/${deployment_id}/statuses -f deployment_id=${deployment_id} -f state=success | jq .
+
+      - name: Create deployments
+          echo "create deployments"
+          gh api repos/kazamori/github-api-tools/deployments -f ref=master -f environment=dev
