@@ -4,7 +4,8 @@ on:
   deployment_status
 
 jobs:
-  build:
+  deploy:
+    if: ${{ github.event.deployment_status.state != 'success' }}
     runs-on: ubuntu-latest
     env:
       APP_ID: 176318
